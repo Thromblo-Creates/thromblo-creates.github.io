@@ -3,6 +3,7 @@ title: Quick BRT
 tagline: A Windows desktop tool for batch-removing black image backgrounds and resizing for Discord workflows.
 category: desktop-app
 status: released
+tags: [Batch Editor, Background Removal, Image Resizer, Discord Workflow]
 tech: [Python, PySide6, Pillow, NumPy, OpenCV]
 accent: "#2bb3c0"
 featured: false

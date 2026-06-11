@@ -10,6 +10,9 @@ const projects = defineCollection({
     tagline: z.string(),
     category: z.enum(['discord-bot', 'game', 'desktop-app']),
     status: z.enum(['live', 'in-development', 'released', 'beta']),
+    /** Short application-descriptor tags shown on the card (e.g. "Idle RPG"). */
+    tags: z.array(z.string()).default([]),
+    /** Underlying stack, shown only on the detail page under "Built with". */
     tech: z.array(z.string()),
     /** Card accent color. */
     accent: z.string().default('#1f9fb0'),
