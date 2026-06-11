@@ -1,0 +1,140 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { withBase, asset } from "../lib/paths";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+}
+
+const { project } = Astro.props;
+const { data, id } = project;
+
+const categoryMeta: Record<string, { label: string; emoji: string }> = {
+  "discord-bot": { label: "Discord Bot", emoji: "🤖" },
+  game: { label: "Game", emoji: "🎮" },
+  "desktop-app": { label: "Desktop App", emoji: "🖥️" },
+};
+const statusLabel: Record<string, string> = {
+  live: "Live",
+  "in-development": "In development",
+  released: "Released",
+  beta: "Beta",
+};
+const cat = categoryMeta[data.category];
+const tech = data.tech.slice(0, 5);
+const href = withBase(`/projects/${id}`);
+---
+
+<article class="card panel" style={`--accent:${data.accent}`}>
+  {
+    data.badge && (
+      <div class="ribbon-wrap">
+        <div class="ribbon">{data.badge}</div>
+      </div>
+    )
+  }
+
+  {
+    data.cover && (
+      <a class="card__cover" href={href}>
+        <img
+          src={asset(data.cover)}
+          alt={`${data.title} cover`}
+          width="600"
+          height="338"
+          loading="lazy"
+        />
+      </a>
+    )
+  }
+
+  <a class="card__head gloss" href={href} style={`--accent:${data.accent}`}>
+    <span class="card__emoji" aria-hidden="true">{cat.emoji}</span>
+    <span class="card__cat">{cat.label}</span>
+  </a>
+
+  <div class="card__body">
+    <h3 class="card__title"><a href={href}>{data.title}</a></h3>
+    <p class="muted card__tagline">{data.tagline}</p>
+    <div class="pill-row">
+      {tech.map((t) => <span class="pill">{t}</span>)}
+    </div>
+  </div>
+
+  <div class="card__foot">
+    <span class={`status status--${data.status}`}>{statusLabel[data.status]}</span>
+    <a class="btn btn--primary btn--sm" href={href}>View project →</a>
+  </div>
+</article>
+
+<style>
+  .card {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.1s ease, box-shadow 0.12s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(35, 55, 65, 0.18);
+  }
+  .card__cover {
+    display: block;
+    line-height: 0;
+  }
+  .card__cover img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--line);
+  }
+  .card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.1rem;
+    text-decoration: none;
+    color: #fff;
+  }
+  .card__head:hover {
+    text-decoration: none;
+    filter: brightness(1.04);
+  }
+  .card__emoji {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+  }
+  .card__cat {
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .card__body {
+    padding: 1rem 1.2rem 0.4rem;
+    flex: 1;
+  }
+  .card__title {
+    margin: 0 0 0.25rem;
+    font-size: 1.2rem;
+  }
+  .card__title a {
+    color: var(--ink);
+  }
+  .card__title a:hover {
+    color: var(--link);
+    text-decoration: none;
+  }
+  .card__tagline {
+    margin: 0 0 0.8rem;
+    font-size: 0.92rem;
+  }
+  .card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.9rem 1.2rem 1.1rem;
+  }
+</style>

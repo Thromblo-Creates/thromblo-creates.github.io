@@ -1,0 +1,124 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import GlossyButton from "../components/GlossyButton.astro";
+import { site, isSet, mailto, activeSocials } from "../config/site";
+
+const email = mailto();
+const hasSocials = activeSocials().length > 0;
+
+const channels = [
+  {
+    icon: "✉️",
+    title: "Email",
+    body: "Best for project enquiries, collaborations, and longer questions.",
+    href: email,
+    cta: isSet(site.email) ? site.email : "Email coming soon",
+    variant: "primary",
+    external: false,
+  },
+  {
+    icon: "💬",
+    title: "Discord",
+    body: "Hang out, report bugs, suggest features, and chat with other players.",
+    href: isSet(site.discordInvite) ? site.discordInvite : null,
+    cta: "Join the server",
+    variant: "discord",
+    external: true,
+  },
+  {
+    icon: "♥",
+    title: "Patreon",
+    body: "Support development and keep the bots online. Always optional.",
+    href: isSet(site.patreon) ? site.patreon : null,
+    cta: "Become a supporter",
+    variant: "patreon",
+    external: true,
+  },
+];
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch, join the Discord, or support the work on Patreon."
+>
+  <section class="wrap pagehead">
+    <p class="eyebrow">Say hello</p>
+    <h1>Get in touch</h1>
+    <p class="muted lead">
+      Questions, ideas, bug reports, or just want to say hi? Here is where to find me.
+    </p>
+  </section>
+
+  <section class="section wrap">
+    <div class="grid grid--2 channels">
+      {
+        channels.map((c) => (
+          <div class="channel panel">
+            <span class="channel__icon" aria-hidden="true">{c.icon}</span>
+            <h2 class="channel__title">{c.title}</h2>
+            <p class="muted channel__body">{c.body}</p>
+            <GlossyButton href={c.href} variant={c.variant as any} external={c.external} block>
+              {c.cta}
+            </GlossyButton>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    hasSocials && (
+      <section class="section wrap">
+        <div class="panel social-panel">
+          <h2>Elsewhere on the web</h2>
+          <p class="muted">Follow along for updates and behind-the-scenes bits.</p>
+          <SocialLinks variant="labeled" />
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .pagehead {
+    padding: 2.6rem 20px 0.5rem;
+  }
+  .lead {
+    max-width: 56ch;
+    font-size: 1.05rem;
+  }
+  .channel {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  .channel__icon {
+    font-size: 2.2rem;
+    width: 3.4rem;
+    height: 3.4rem;
+    display: grid;
+    place-items: center;
+    margin-bottom: 0.6rem;
+    border-radius: 999px;
+    background-image: linear-gradient(to bottom, var(--panel-top), var(--panel-2));
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-sm);
+  }
+  .channel__title {
+    margin: 0 0 0.3rem;
+    font-size: 1.2rem;
+  }
+  .channel__body {
+    margin: 0 0 1.1rem;
+    flex: 1;
+    font-size: 0.93rem;
+  }
+  .social-panel h2 {
+    margin-top: 0;
+  }
+  .social-panel p {
+    margin-bottom: 1rem;
+  }
+</style>

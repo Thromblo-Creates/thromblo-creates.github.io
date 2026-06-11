@@ -1,0 +1,56 @@
+---
+import type { BotConfig } from "../config/bots";
+import { topggUrl, topggWidgetUrl } from "../config/bots";
+
+interface Props {
+  bot: BotConfig;
+}
+
+const { bot } = Astro.props;
+const widget = topggWidgetUrl(bot);
+const page = topggUrl(bot);
+---
+
+{
+  widget && page ? (
+    <a class="ttgg" href={page} target="_blank" rel="noopener noreferrer">
+      <img src={widget} alt={`${bot.name} on top.gg`} width="270" height="80" loading="lazy" />
+    </a>
+  ) : (
+    <div class="ttgg ttgg--placeholder" aria-hidden="true">
+      <strong>top.gg widget</strong>
+      <span class="tiny muted">
+        Appears here once <code>topggId</code> is set in src/config/bots.ts
+      </span>
+    </div>
+  )
+}
+
+<style>
+  .ttgg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+  }
+  .ttgg img {
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+  }
+  .ttgg--placeholder {
+    flex-direction: column;
+    gap: 0.2rem;
+    text-align: center;
+    width: 270px;
+    max-width: 100%;
+    padding: 1rem;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--panel-2);
+    color: var(--ink-soft);
+  }
+  .ttgg--placeholder code {
+    font-family: "Consolas", ui-monospace, monospace;
+    font-size: 0.85em;
+  }
+</style>

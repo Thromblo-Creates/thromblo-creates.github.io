@@ -1,0 +1,84 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { withBase } from "../../lib/paths";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("devlog")).filter((p) => !p.data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { data } = post;
+const { Content } = await render(post);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+---
+
+<BaseLayout title={data.title} description={data.summary}>
+  <header class="phead gloss" style="--accent: var(--teal)">
+    <div class="wrap phead__inner">
+      <a class="phead__back" href={withBase("/devlog")}>← Devlog</a>
+      <time class="phead__date" datetime={data.date.toISOString()}>{fmt(data.date)}</time>
+      <h1 class="phead__title">{data.title}</h1>
+      {
+        data.tags.length > 0 && (
+          <div class="pill-row phead__tags">
+            {data.tags.map((t) => <span class="pill">#{t}</span>)}
+          </div>
+        )
+      }
+    </div>
+  </header>
+
+  <div class="wrap pbody">
+    <article class="prose panel panel--lg">
+      <Content />
+    </article>
+    <p class="backrow">
+      <a class="btn btn--ghost btn--sm" href={withBase("/devlog")}>← Back to all posts</a>
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .phead {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  }
+  .phead__inner {
+    padding: 1.4rem 20px 1.8rem;
+  }
+  .phead__back {
+    display: inline-block;
+    margin-bottom: 0.8rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .phead__back:hover {
+    color: #fff;
+  }
+  .phead__date {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .phead__title {
+    margin: 0.2rem 0 0.6rem;
+    color: #fff;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+  .pbody {
+    max-width: 760px;
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+  }
+  .backrow {
+    margin-top: 1.4rem;
+  }
+</style>

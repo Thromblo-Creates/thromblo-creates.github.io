@@ -1,0 +1,219 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import GlossyButton from "../../components/GlossyButton.astro";
+import { getBot } from "../../config/bots";
+import { withBase } from "../../lib/paths";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+
+const categoryMeta: Record<string, { label: string; emoji: string }> = {
+  "discord-bot": { label: "Discord Bot", emoji: "🤖" },
+  game: { label: "Game", emoji: "🎮" },
+  "desktop-app": { label: "Desktop App", emoji: "🖥️" },
+};
+const statusLabel: Record<string, string> = {
+  live: "Live",
+  "in-development": "In development",
+  released: "Released",
+  beta: "Beta",
+};
+const cat = categoryMeta[data.category];
+
+// Build the external-link list from whatever is set in frontmatter.
+const linkDefs: { key: keyof typeof data.links; label: string; variant: string }[] = [
+  { key: "website", label: "Visit site", variant: "primary" },
+  { key: "github", label: "Source on GitHub", variant: "ghost" },
+  { key: "itch", label: "Play on itch.io", variant: "accent" },
+  { key: "googlePlay", label: "Get on Google Play", variant: "green" },
+  { key: "download", label: "Download", variant: "primary" },
+  { key: "topgg", label: "View on top.gg", variant: "gold" },
+  { key: "invite", label: "Add to Discord", variant: "discord" },
+];
+const links = linkDefs
+  .map((d) => ({ ...d, href: data.links[d.key] }))
+  .filter((d) => typeof d.href === "string" && d.href.length > 0);
+
+const relatedBot = data.botId ? getBot(data.botId) : undefined;
+---
+
+<BaseLayout title={data.title} description={data.tagline} image={data.cover}>
+  <header class="phead gloss" style={`--accent:${data.accent}`}>
+    <div class="wrap phead__inner">
+      <a class="phead__back" href={withBase("/projects")}>← All projects</a>
+      <div class="phead__row">
+        <span class="phead__emoji" aria-hidden="true">{cat.emoji}</span>
+        <div>
+          <p class="phead__cat">{cat.label}{data.year ? ` · ${data.year}` : ""}</p>
+          <h1 class="phead__title">{data.title}</h1>
+          <p class="phead__tag">{data.tagline}</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap pbody">
+    <article class="prose panel panel--lg">
+      <Content />
+    </article>
+
+    <aside class="pside">
+      <div class="panel">
+        <h3 class="pside__h">At a glance</h3>
+        <dl class="meta">
+          <div>
+            <dt>Status</dt>
+            <dd><span class={`status status--${data.status}`}>{statusLabel[data.status]}</span></dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>{cat.label}</dd>
+          </div>
+          {data.year && (
+            <div>
+              <dt>Year</dt>
+              <dd>{data.year}</dd>
+            </div>
+          )}
+        </dl>
+        <h3 class="pside__h">Built with</h3>
+        <div class="pill-row">
+          {data.tech.map((t) => <span class="pill">{t}</span>)}
+        </div>
+      </div>
+
+      {
+        (links.length > 0 || relatedBot) && (
+          <div class="panel pside__links">
+            <h3 class="pside__h">Links</h3>
+            <div class="pside__btns">
+              {links.map((l) => (
+                <GlossyButton href={l.href} variant={l.variant as any} block external>
+                  {l.label}
+                </GlossyButton>
+              ))}
+              {relatedBot && (
+                <a class="btn btn--ghost btn--block" href={withBase(`/bots#${relatedBot.id}`)}>
+                  Add or vote on the Bots hub →
+                </a>
+              )}
+            </div>
+          </div>
+        )
+      }
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .phead {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  }
+  .phead__inner {
+    padding: 1.4rem 20px 1.8rem;
+  }
+  .phead__back {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .phead__back:hover {
+    color: #fff;
+  }
+  .phead__row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .phead__emoji {
+    font-size: 2.8rem;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+  }
+  .phead__cat {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .phead__title {
+    margin: 0.15rem 0;
+    color: #fff;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+  .phead__tag {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 60ch;
+  }
+
+  .pbody {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.4rem;
+    align-items: start;
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+  }
+  .pside {
+    display: grid;
+    gap: 1.2rem;
+    position: sticky;
+    top: 78px;
+  }
+  .pside__h {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    margin: 0 0 0.6rem;
+  }
+  .pside__h + .pill-row {
+    margin-bottom: 0.3rem;
+  }
+  .pside__links .pside__btns {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .meta {
+    margin: 0 0 1.2rem;
+  }
+  .meta > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .meta dt {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .meta dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  @media (max-width: 820px) {
+    .pbody {
+      grid-template-columns: 1fr;
+    }
+    .pside {
+      position: static;
+    }
+  }
+</style>

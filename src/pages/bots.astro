@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BotCard from "../components/BotCard.astro";
+import { bots } from "../config/bots";
+import { site, isSet } from "../config/site";
+---
+
+<BaseLayout
+  title="Bots"
+  description="Add my Discord bots to your server, vote on top.gg, and earn rewards."
+>
+  <section class="wrap pagehead">
+    <p class="eyebrow">Play in Discord</p>
+    <h1>Bots hub</h1>
+    <p class="muted lead">
+      Add a bot to your server, vote for it on top.gg to earn in-game rewards,
+      and track its growth. Stats go live once the data bridge is connected.
+    </p>
+    {
+      isSet(site.discordInvite) && (
+        <p>
+          <a class="btn btn--discord btn--sm" href={site.discordInvite} target="_blank" rel="noopener noreferrer">
+            Join the community Discord
+          </a>
+        </p>
+      )
+    }
+  </section>
+
+  <section class="section wrap bots">
+    {bots.map((bot) => <BotCard bot={bot} />)}
+  </section>
+
+  <section class="section wrap">
+    <div class="panel howto">
+      <h2 class="howto__title">⚙️ How vote rewards work</h2>
+      <p class="muted">
+        This site is fully static (hosted on GitHub Pages), so the vote rewards are
+        handled by the bot itself, not here. When you upvote a bot on top.gg, top.gg
+        notifies the bot directly and it drops a Voter Chest into your account the
+        next time you play.
+      </p>
+      <ol class="howto__steps">
+        <li>Add the bot to your server with <strong>Add to Discord</strong> above.</li>
+        <li>Open its top.gg page and hit <strong>Vote</strong> (you can vote again every 12 hours).</li>
+        <li>Run any command in Discord and your Voter Chest is waiting.</li>
+      </ol>
+      <p class="muted tiny">
+        Supporter perks are linked to <a href={site.patreon} target="_blank" rel="noopener noreferrer">Patreon</a>,
+        and everything that matters for progression stays earnable in-game.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pagehead {
+    padding: 2.6rem 20px 0.5rem;
+  }
+  .lead {
+    max-width: 62ch;
+    font-size: 1.05rem;
+  }
+  .bots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 1.4rem;
+  }
+  .howto__title {
+    margin-top: 0;
+    font-size: 1.3rem;
+  }
+  .howto__steps {
+    margin: 0.6rem 0 0;
+    padding-left: 1.3rem;
+    display: grid;
+    gap: 0.45rem;
+  }
+  .howto code,
+  .lead code {
+    font-family: "Consolas", ui-monospace, monospace;
+    font-size: 0.88em;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 0.05em 0.4em;
+  }
+</style>

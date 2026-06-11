@@ -1,0 +1,213 @@
+---
+import { site, isSet } from "../config/site";
+import { withBase } from "../lib/paths";
+
+const path = Astro.url.pathname;
+const nav = [
+  { href: "/", label: "Home" },
+  { href: "/projects", label: "Projects" },
+  { href: "/bots", label: "Bots" },
+  { href: "/devlog", label: "Devlog" },
+  { href: "/contact", label: "Contact" },
+];
+
+function active(href: string): boolean {
+  const base = withBase(href).replace(/\/$/, "");
+  const here = path.replace(/\/$/, "");
+  return href === "/" ? here === base : here === base || here.startsWith(base + "/");
+}
+
+const supportHref = isSet(site.patreon) ? site.patreon : withBase("/contact");
+const supportExternal = isSet(site.patreon);
+---
+
+<header class="hd">
+  <div class="wrap hd__inner">
+    <a class="brand" href={withBase("/")}>
+      <span class="brand__mark" aria-hidden="true">✦</span>
+      <span class="brand__name display">{site.owner}</span>
+    </a>
+
+    <details class="nav">
+      <summary class="nav__toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </summary>
+      <nav class="nav__panel" aria-label="Primary">
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a
+                  href={withBase(item.href)}
+                  class:list={["nav__link", { "is-active": active(item.href) }]}
+                  aria-current={active(item.href) ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+          <li class="nav__support">
+            <a
+              class="btn btn--patreon btn--sm"
+              href={supportHref}
+              target={supportExternal ? "_blank" : undefined}
+              rel={supportExternal ? "noopener noreferrer" : undefined}
+            >
+              ♥ Support
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .hd {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    color: #fff;
+    background-image: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.28),
+        rgba(255, 255, 255, 0.04) 50%,
+        rgba(0, 0, 0, 0.08)
+      ),
+      linear-gradient(to bottom, var(--teal-light), var(--teal-dark));
+    border-bottom: 1px solid rgba(0, 0, 0, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 3px 10px rgba(20, 50, 60, 0.25);
+  }
+  .hd__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 58px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+  }
+  .brand:hover {
+    text-decoration: none;
+    filter: brightness(1.05);
+  }
+  .brand__mark {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+  .brand__name {
+    font-size: 1.7rem;
+    line-height: 1;
+  }
+
+  .nav {
+    position: relative;
+  }
+  .nav__toggle {
+    display: none;
+    width: 42px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.08));
+    cursor: pointer;
+    list-style: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .nav__toggle::-webkit-details-marker {
+    display: none;
+  }
+  .nav__toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+  .nav__panel ul {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__link {
+    display: inline-block;
+    padding: 0.45rem 0.8rem;
+    border-radius: var(--radius-sm);
+    color: rgba(255, 255, 255, 0.94);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+  .nav__link:hover {
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.16);
+  }
+  .nav__link.is-active {
+    background: rgba(0, 0, 0, 0.16);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28);
+  }
+  .nav__support {
+    margin-left: 0.4rem;
+  }
+
+  @media (max-width: 740px) {
+    .nav__toggle {
+      display: flex;
+    }
+    .nav__panel {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 210px;
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      background-image: linear-gradient(to bottom, var(--panel-top), var(--panel-2));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .nav[open] .nav__panel {
+      display: block;
+    }
+    .nav:not([open]) .nav__panel {
+      display: none;
+    }
+    .nav__panel ul {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.15rem;
+    }
+    .nav__link {
+      color: var(--ink);
+      text-shadow: none;
+    }
+    .nav__link:hover {
+      background: var(--panel-2);
+    }
+    .nav__link.is-active {
+      background: color-mix(in srgb, var(--teal) 18%, var(--panel));
+      box-shadow: none;
+      color: var(--link);
+    }
+    .nav__support {
+      margin: 0.35rem 0 0;
+    }
+    .nav__support .btn {
+      width: 100%;
+    }
+  }
+</style>

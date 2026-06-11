@@ -1,0 +1,102 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { withBase } from "../../lib/paths";
+
+const posts = (await getCollection("devlog"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+---
+
+<BaseLayout
+  title="Devlog"
+  description="Updates and behind-the-scenes notes on my games and bots."
+>
+  <section class="wrap pagehead">
+    <p class="eyebrow">Notes from the workshop</p>
+    <h1>Devlog</h1>
+    <p class="muted lead">
+      Progress updates, feature drops, and the occasional look under the hood.
+    </p>
+  </section>
+
+  <section class="section wrap">
+    {
+      posts.length === 0 ? (
+        <div class="panel"><p class="muted">No posts yet. Check back soon.</p></div>
+      ) : (
+        <div class="posts">
+          {posts.map((post) => (
+            <article class="post panel">
+              <time class="post__date" datetime={post.data.date.toISOString()}>
+                {fmt(post.data.date)}
+              </time>
+              <h2 class="post__title">
+                <a href={withBase(`/devlog/${post.id}`)}>{post.data.title}</a>
+              </h2>
+              <p class="post__summary muted">{post.data.summary}</p>
+              <div class="post__foot">
+                {post.data.tags.length > 0 && (
+                  <div class="pill-row">
+                    {post.data.tags.map((t) => (
+                      <span class="pill">#{t}</span>
+                    ))}
+                  </div>
+                )}
+                <a class="post__more" href={withBase(`/devlog/${post.id}`)}>Read more →</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .pagehead {
+    padding: 2.6rem 20px 0.5rem;
+  }
+  .lead {
+    max-width: 58ch;
+    font-size: 1.05rem;
+  }
+  .posts {
+    display: grid;
+    gap: 1.1rem;
+  }
+  .post__date {
+    color: var(--link);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .post__title {
+    margin: 0.25rem 0 0.35rem;
+    font-size: 1.35rem;
+  }
+  .post__title a {
+    color: var(--ink);
+  }
+  .post__title a:hover {
+    color: var(--link);
+    text-decoration: none;
+  }
+  .post__summary {
+    margin: 0 0 0.9rem;
+  }
+  .post__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .post__more {
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+</style>

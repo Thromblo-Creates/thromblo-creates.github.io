@@ -1,0 +1,60 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const groups: { key: string; label: string; emoji: string }[] = [
+  { key: "discord-bot", label: "Discord Bots", emoji: "🤖" },
+  { key: "game", label: "Games", emoji: "🎮" },
+  { key: "desktop-app", label: "Desktop Apps", emoji: "🖥️" },
+];
+---
+
+<BaseLayout
+  title="Projects"
+  description="Idle games, Discord bots, and desktop tools I have built."
+>
+  <section class="wrap pagehead">
+    <p class="eyebrow">Portfolio</p>
+    <h1>Projects</h1>
+    <p class="muted lead">
+      Everything I have been tinkering with: idle games, the Discord bots that
+      grow out of them, and the odd desktop tool. Click any card for the full story.
+    </p>
+  </section>
+
+  {
+    groups.map((group) => {
+      const items = projects.filter((p) => p.data.category === group.key);
+      if (items.length === 0) return null;
+      return (
+        <section class="section wrap">
+          <div class="section-head">
+            <h2>
+              <span aria-hidden="true">{group.emoji}</span> {group.label}
+            </h2>
+          </div>
+          <div class="grid grid--projects">
+            {items.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </section>
+      );
+    })
+  }
+</BaseLayout>
+
+<style>
+  .pagehead {
+    padding: 2.6rem 20px 0.5rem;
+  }
+  .lead {
+    max-width: 60ch;
+    font-size: 1.05rem;
+  }
+</style>

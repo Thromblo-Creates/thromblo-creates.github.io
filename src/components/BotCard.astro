@@ -1,0 +1,165 @@
+---
+import type { BotConfig } from "../config/bots";
+import { inviteUrl, topggUrl, topggVoteUrl } from "../config/bots";
+import { getBotStats, formatStat } from "../lib/bots";
+import { withBase } from "../lib/paths";
+import GlossyButton from "./GlossyButton.astro";
+import TopGGWidget from "./TopGGWidget.astro";
+
+interface Props {
+  bot: BotConfig;
+}
+
+const { bot } = Astro.props;
+const stats = await getBotStats(bot);
+const invite = inviteUrl(bot);
+const vote = topggVoteUrl(bot);
+const page = topggUrl(bot);
+---
+
+<section class="bot panel" id={bot.id} style={`--accent:${bot.accent}`}>
+  <header class="bot__head gloss" style={`--accent:${bot.accent}`}>
+    <span class="bot__emoji" aria-hidden="true">{bot.emoji}</span>
+    <div>
+      <h3 class="bot__name">{bot.name}</h3>
+      <p class="bot__blurb">{bot.blurb}</p>
+    </div>
+  </header>
+
+  <div class="bot__body">
+    <div class="bot__stats" role="group" aria-label="Bot stats">
+      <div class="stat">
+        <span class="stat__num">{formatStat(stats.servers)}</span>
+        <span class="stat__label">Servers</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num">{formatStat(stats.users)}</span>
+        <span class="stat__label">Users</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num">{formatStat(stats.monthlyVotes)}</span>
+        <span class="stat__label">Votes / mo</span>
+      </div>
+    </div>
+
+    <ul class="bot__features">
+      {bot.features.map((f) => <li>{f}</li>)}
+    </ul>
+
+    <div class="bot__actions">
+      <GlossyButton href={invite} variant="discord" external disabledLabel="Set clientId in src/config/bots.ts">
+        ＋ Add to Discord
+      </GlossyButton>
+      <GlossyButton href={vote} variant="gold" external disabledLabel="Set topggId in src/config/bots.ts">
+        ▲ Vote on top.gg
+      </GlossyButton>
+      <GlossyButton href={page} variant="ghost" external disabledLabel="Set topggId in src/config/bots.ts">
+        View on top.gg
+      </GlossyButton>
+      {
+        bot.projectSlug && (
+          <a class="bot__more" href={withBase(`/projects/${bot.projectSlug}`)}>
+            Full details →
+          </a>
+        )
+      }
+    </div>
+
+    <div class="bot__widget">
+      <TopGGWidget bot={bot} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .bot {
+    padding: 0;
+    overflow: hidden;
+    scroll-margin-top: 80px;
+  }
+  .bot__head {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.3rem;
+  }
+  .bot__emoji {
+    font-size: 2.1rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  }
+  .bot__name {
+    margin: 0;
+    color: #fff;
+    font-size: 1.35rem;
+  }
+  .bot__blurb {
+    margin: 0.15rem 0 0;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.9rem;
+  }
+  .bot__body {
+    padding: 1.2rem 1.3rem 1.4rem;
+  }
+  .bot__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1.1rem;
+  }
+  .stat {
+    text-align: center;
+    padding: 0.7rem 0.4rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    background-image: linear-gradient(to bottom, var(--panel-top), var(--panel-2));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .stat__num {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .stat__label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .bot__features {
+    margin: 0 0 1.2rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .bot__features li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 0.93rem;
+  }
+  .bot__features li::before {
+    content: "✦";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.85rem;
+    top: 0.15rem;
+  }
+  .bot__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.2rem;
+  }
+  .bot__more {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+  .bot__widget {
+    border-top: 1px dashed var(--line);
+    padding-top: 1.1rem;
+  }
+</style>

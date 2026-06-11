@@ -1,0 +1,300 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import GlossyButton from "../components/GlossyButton.astro";
+import { site, isSet } from "../config/site";
+import { bots } from "../config/bots";
+import { withBase } from "../lib/paths";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const featured = projects.filter((p) => p.data.featured);
+
+const posts = (await getCollection("devlog"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+
+const supportHref = isSet(site.patreon) ? site.patreon : withBase("/contact");
+---
+
+<BaseLayout>
+  <!-- hero -->
+  <section class="hero gloss" style="--accent: var(--teal)">
+    <span class="hero__spark" aria-hidden="true">✦</span>
+    <div class="wrap hero__inner">
+      <p class="hero__eyebrow">Indie games · Discord bots · chill stuff</p>
+      <h1 class="hero__title display">{site.owner}</h1>
+      <p class="hero__tagline">{site.tagline}</p>
+      <p class="hero__intro">{site.intro}</p>
+      <div class="hero__cta">
+        <GlossyButton href={withBase("/projects")} variant="accent" size="lg">
+          🎮 View Projects
+        </GlossyButton>
+        <GlossyButton href={supportHref} variant="patreon" size="lg" external={isSet(site.patreon)}>
+          ♥ Support
+        </GlossyButton>
+        <GlossyButton
+          href={isSet(site.discordInvite) ? site.discordInvite : null}
+          variant="discord"
+          size="lg"
+          external
+          disabledLabel="Set discordInvite in src/config/site.ts"
+        >
+          Join the Discord
+        </GlossyButton>
+      </div>
+    </div>
+  </section>
+
+  <!-- featured projects -->
+  <section class="section wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Featured</p>
+        <h2>Things I have been building</h2>
+      </div>
+      <a class="btn btn--ghost btn--sm" href={withBase("/projects")}>See all projects →</a>
+    </div>
+    <div class="grid grid--projects">
+      {featured.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+
+  <!-- bots teaser -->
+  <section class="section wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Play in Discord</p>
+        <h2>My Discord bots</h2>
+      </div>
+      <a class="btn btn--ghost btn--sm" href={withBase("/bots")}>Open the Bots hub →</a>
+    </div>
+    <div class="grid grid--2">
+      {
+        bots.map((bot) => (
+          <a class="botteaser panel" href={withBase(`/bots#${bot.id}`)} style={`--accent:${bot.accent}`}>
+            <span class="botteaser__emoji" aria-hidden="true">
+              {bot.emoji}
+            </span>
+            <span class="botteaser__body">
+              <strong class="botteaser__name">{bot.name}</strong>
+              <span class="muted tiny">{bot.blurb}</span>
+            </span>
+            <span class="botteaser__go" aria-hidden="true">→</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- latest devlog -->
+  {
+    posts.length > 0 && (
+      <section class="section wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Devlog</p>
+            <h2>Latest from the workshop</h2>
+          </div>
+          <a class="btn btn--ghost btn--sm" href={withBase("/devlog")}>
+            Read the devlog →
+          </a>
+        </div>
+        <div class="postlist">
+          {posts.map((post) => (
+            <a class="postrow panel" href={withBase(`/devlog/${post.id}`)}>
+              <time class="postrow__date" datetime={post.data.date.toISOString()}>
+                {fmt(post.data.date)}
+              </time>
+              <span class="postrow__main">
+                <strong>{post.data.title}</strong>
+                <span class="muted tiny">{post.data.summary}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- support band -->
+  <section class="section wrap">
+    <div class="cta gloss" style="--accent: var(--orange)">
+      <div class="cta__text">
+        <h2 class="cta__title">Like what I make?</h2>
+        <p>Support keeps the bots online and the games growing. Every bit helps, and it is always optional.</p>
+      </div>
+      <div class="cta__buttons">
+        <GlossyButton href={supportHref} variant="gold" size="lg" external={isSet(site.patreon)}>
+          ♥ Become a supporter
+        </GlossyButton>
+        <GlossyButton href={withBase("/contact")} variant="ghost" size="lg">Get in touch</GlossyButton>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  }
+  .hero__inner {
+    position: relative;
+    padding: 3.4rem 20px 3.2rem;
+    z-index: 1;
+  }
+  .hero__spark {
+    position: absolute;
+    right: -40px;
+    top: -50px;
+    font-size: 22rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.12);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero__eyebrow {
+    margin: 0 0 0.5rem;
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .hero__title {
+    margin: 0;
+    font-size: clamp(2.6rem, 7vw, 4.2rem);
+    color: #fff;
+    line-height: 1;
+  }
+  .hero__tagline {
+    margin: 0.5rem 0 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .hero__intro {
+    margin: 0.7rem 0 1.4rem;
+    max-width: 54ch;
+    color: rgba(255, 255, 255, 0.94);
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .botteaser {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.1s ease, box-shadow 0.12s ease;
+  }
+  .botteaser:hover {
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(35, 55, 65, 0.16);
+  }
+  .botteaser__emoji {
+    font-size: 1.9rem;
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    background-image: linear-gradient(
+      to bottom,
+      var(--accent),
+      color-mix(in srgb, var(--accent) 70%, #000)
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), var(--shadow-sm);
+  }
+  .botteaser__body {
+    display: grid;
+    gap: 0.15rem;
+    flex: 1;
+  }
+  .botteaser__name {
+    font-size: 1.05rem;
+  }
+  .botteaser__go {
+    color: var(--accent);
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .postlist {
+    display: grid;
+    gap: 0.7rem;
+  }
+  .postrow {
+    display: flex;
+    gap: 1.1rem;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--ink);
+    padding: 1rem 1.2rem;
+    transition: transform 0.1s ease;
+  }
+  .postrow:hover {
+    text-decoration: none;
+    transform: translateX(3px);
+  }
+  .postrow__date {
+    flex: 0 0 auto;
+    width: 8.5rem;
+    color: var(--link);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .postrow__main {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    padding: 1.8rem 2rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(0, 0, 0, 0.16);
+  }
+  .cta__title {
+    margin: 0 0 0.2rem;
+    color: #fff;
+  }
+  .cta__text p {
+    margin: 0;
+    max-width: 48ch;
+    color: rgba(255, 255, 255, 0.96);
+  }
+  .cta__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  @media (max-width: 640px) {
+    .postrow {
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .postrow__date {
+      width: auto;
+    }
+  }
+</style>

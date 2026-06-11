@@ -1,0 +1,59 @@
+---
+// A glossy button that renders as a link when href is set, or a disabled-looking
+// span when it is not (used so placeholder config never produces a broken link).
+interface Props {
+  href?: string | null;
+  variant?:
+    | "primary"
+    | "accent"
+    | "green"
+    | "discord"
+    | "patreon"
+    | "gold"
+    | "ghost";
+  size?: "sm" | "lg";
+  block?: boolean;
+  external?: boolean;
+  /** Tooltip shown on the disabled state when href is missing. */
+  disabledLabel?: string;
+  class?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  size,
+  block,
+  external,
+  disabledLabel = "Coming soon",
+  class: cls = "",
+} = Astro.props;
+
+const classes = [
+  "btn",
+  `btn--${variant}`,
+  size ? `btn--${size}` : "",
+  block ? "btn--block" : "",
+  href ? "" : "is-disabled",
+  cls,
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+{
+  href ? (
+    <a
+      class={classes}
+      href={href}
+      rel={external ? "noopener noreferrer" : undefined}
+      target={external ? "_blank" : undefined}
+    >
+      <slot />
+    </a>
+  ) : (
+    <span class={classes} aria-disabled="true" title={disabledLabel}>
+      <slot />
+    </span>
+  )
+}

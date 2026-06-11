@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#46c4d3"/>
+      <stop offset="1" stop-color="#15808f"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.30"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="315" fill="url(#gloss)"/>
+
+  <!-- star mark -->
+  <path d="M150 150l16 41 43 4-33 28 10 42-36-23-36 23 10-42-33-28 43-4z"
+        fill="#ffffff" stroke="rgba(0,0,0,0.12)" stroke-width="2"/>
+
+  <!-- wordmark -->
+  <text x="100" y="360" font-family="'Lobster','Brush Script MT',cursive" font-size="130"
+        fill="#ffffff" style="text-shadow:0 2px 0 rgba(0,0,0,0.18)">Thromblo Creates</text>
+
+  <!-- tagline -->
+  <text x="104" y="430" font-family="'Open Sans','Segoe UI',system-ui,sans-serif"
+        font-size="40" font-weight="600" fill="#eafbff">Games, Discord bots, and tools.</text>
+
+  <!-- chips -->
+  <g font-family="'Open Sans','Segoe UI',system-ui,sans-serif" font-size="30" font-weight="700" fill="#0c3a41">
+    <rect x="104" y="486" rx="22" width="232" height="58" fill="url(#chip)"/>
+    <text x="132" y="524">AwayWard</text>
+    <rect x="356" y="486" rx="22" width="262" height="58" fill="url(#chip)"/>
+    <text x="384" y="524">Sage &amp; Pestle</text>
+    <rect x="638" y="486" rx="22" width="200" height="58" fill="url(#chip)"/>
+    <text x="666" y="524">Quick BRT</text>
+  </g>
+</svg>

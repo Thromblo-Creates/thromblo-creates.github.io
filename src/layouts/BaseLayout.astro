@@ -1,0 +1,84 @@
+---
+import "../styles/global.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import { site } from "../config/site";
+import { asset } from "../lib/paths";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path (under /public) to a social share image. Defaults to the site card. */
+  image?: string;
+}
+
+const { title, description, image } = Astro.props;
+const fullTitle = title
+  ? `${title} · ${site.owner}`
+  : `${site.owner} · ${site.tagline}`;
+const desc = description ?? site.intro;
+
+const origin = Astro.site ?? new URL("http://localhost:4321");
+const canonical = new URL(Astro.url.pathname, origin).href;
+const ogImage = new URL(asset(image ?? "/images/og-default.svg"), origin).href;
+const favicon = asset("/favicon.svg");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Set the theme before first paint so there is no light/dark flash. */}
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem("theme");
+          if (t !== "light" && t !== "dark") {
+            t = window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          }
+          document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {}
+      })();
+    </script>
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={favicon} type="image/svg+xml" />
+
+    <meta name="theme-color" content="#1f9fb0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f171c" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.owner} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+    <ThemeToggle />
+  </body>
+</html>

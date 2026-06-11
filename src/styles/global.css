@@ -1,0 +1,566 @@
+/* =========================================================================
+   Glossy Web 2.0 theme (circa 2010-2012): soft gradients, gloss highlights,
+   rounded corners, drop shadows, corner ribbons, and a faint paper grain.
+   Tokens live in :root so the whole site re-themes from one place.
+   ========================================================================= */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --bg-top: #eaf4f7;
+  --bg-bottom: #f4ece0;
+  --panel: #ffffff;
+  --panel-2: #f6f9fa;
+  /* gradient top for raised panels (flipped in dark mode) */
+  --panel-top: #ffffff;
+  /* small "chip" surfaces: pills, ghost buttons, round socials, stat tiles */
+  --chip-top: #ffffff;
+  --chip-bottom: #eef1f3;
+  /* inline code background */
+  --code-bg: #eef1f3;
+  /* footer top sheen */
+  --footer-glow: rgba(255, 255, 255, 0.6);
+  --line: rgba(20, 45, 55, 0.13);
+
+  /* ink */
+  --ink: #33434c;
+  --ink-soft: #5d6b73;
+  --ink-faint: #8a969d;
+  /* accent text color used for links and small highlights */
+  --link: #15808f;
+
+  /* brand colors (each has a light/dark pair for glossy gradients) */
+  --teal: #1f9fb0;
+  --teal-light: #46c4d3;
+  --teal-dark: #15808f;
+
+  --orange: #ff8a3d;
+  --orange-light: #ffb265;
+  --orange-dark: #f4711f;
+
+  --green: #4fae6b;
+  --green-light: #75c98d;
+  --green-dark: #3c9457;
+
+  --blurple: #5865f2;
+  --blurple-light: #7c86f7;
+  --blurple-dark: #4450d8;
+
+  --patreon: #f96854;
+  --patreon-light: #ff8a7a;
+  --patreon-dark: #e24f3c;
+
+  --gold: #f3b23c;
+  --gold-dark: #d8920f;
+
+  /* shape */
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 8px 22px rgba(35, 55, 65, 0.14);
+  --shadow-sm: 0 3px 9px rgba(35, 55, 65, 0.14);
+  --maxw: 1080px;
+
+  --font-body: "Open Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Lobster", "Comic Sans MS", "Brush Script MT", cursive;
+}
+
+/* =========================================================================
+   Dark theme. Activated by data-theme="dark" on <html> (set before paint by an
+   inline script in BaseLayout, toggled by the floating ThemeToggle button).
+   Only tokens are overridden here; every component reads them, so the whole site
+   re-themes from this one block. The glossy accent surfaces (.gloss, badges,
+   ribbons, colored buttons) keep their brand colors in both themes.
+   ========================================================================= */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-top: #0f171c;
+  --bg-bottom: #090f13;
+  --panel: #151e24;
+  --panel-2: #1b262d;
+  --panel-top: #1f2b33;
+  --chip-top: #202c34;
+  --chip-bottom: #161f25;
+  --code-bg: #10171c;
+  --footer-glow: rgba(120, 200, 220, 0.06);
+  --line: rgba(150, 180, 195, 0.16);
+
+  --ink: #e8eef1;
+  --ink-soft: #aab8c0;
+  --ink-faint: #7d8b93;
+  /* brighter teal so links + small accents stay legible on dark surfaces */
+  --link: #4fc6d6;
+  --teal-dark: #2fa6b6;
+
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 3px 11px rgba(0, 0, 0, 0.5);
+}
+
+/* ----- reset-ish ----- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16.5px;
+  line-height: 1.62;
+  background-color: var(--bg-bottom);
+  /* faint film grain over a soft vertical gradient */
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='0.035'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 62%);
+  background-attachment: fixed;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ----- typography ----- */
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 0.5em;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+h1 {
+  font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+}
+h2 {
+  font-size: 1.55rem;
+}
+h3 {
+  font-size: 1.18rem;
+}
+p {
+  margin: 0 0 1rem;
+}
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.eyebrow {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--link);
+  margin: 0 0 0.4rem;
+}
+.muted {
+  color: var(--ink-soft);
+}
+.tiny {
+  font-size: 0.82rem;
+}
+
+/* ----- layout ----- */
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.section {
+  padding: 2.6rem 0;
+}
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+.section-head h2 {
+  margin: 0;
+}
+.stack > * + * {
+  margin-top: 1rem;
+}
+.grid {
+  display: grid;
+  gap: 1.2rem;
+}
+.grid--projects {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+.grid--2 {
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+}
+
+/* ----- panels ----- */
+.panel {
+  position: relative;
+  background: var(--panel);
+  background-image: linear-gradient(to bottom, var(--panel-top), var(--panel-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.3rem 1.4rem;
+}
+.panel--lg {
+  padding: 1.9rem 2rem;
+}
+
+/* glossy colored surface; set --accent inline to recolor */
+.gloss {
+  position: relative;
+  color: #fff;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.32),
+      rgba(255, 255, 255, 0.05) 48%,
+      rgba(0, 0, 0, 0.07)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--accent, var(--teal)),
+      color-mix(in srgb, var(--accent, var(--teal)) 68%, #0a1418)
+    );
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* ----- buttons ----- */
+.btn {
+  --b1: var(--teal-light);
+  --b2: var(--teal-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.62em 1.15em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background-image: linear-gradient(to bottom, var(--b1), var(--b2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 2px 5px rgba(20, 40, 50, 0.18);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.04s ease, box-shadow 0.12s ease;
+}
+.btn:hover {
+  filter: brightness(1.07) saturate(1.04);
+  text-decoration: none;
+}
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+.btn:focus-visible {
+  outline: 3px solid rgba(31, 159, 176, 0.5);
+  outline-offset: 2px;
+}
+.btn--primary {
+  --b1: var(--teal-light);
+  --b2: var(--teal-dark);
+}
+.btn--accent {
+  --b1: var(--orange-light);
+  --b2: var(--orange-dark);
+}
+.btn--green {
+  --b1: var(--green-light);
+  --b2: var(--green-dark);
+}
+.btn--discord {
+  --b1: var(--blurple-light);
+  --b2: var(--blurple-dark);
+}
+.btn--patreon {
+  --b1: var(--patreon-light);
+  --b2: var(--patreon-dark);
+}
+.btn--gold {
+  --b1: #ffd97a;
+  --b2: var(--gold-dark);
+  color: #5b3d06;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.btn--ghost {
+  --b1: var(--chip-top);
+  --b2: var(--chip-bottom);
+  color: var(--ink);
+  text-shadow: none;
+  border-color: var(--line);
+}
+.btn--lg {
+  padding: 0.8em 1.5em;
+  font-size: 1.05rem;
+}
+.btn--sm {
+  padding: 0.45em 0.8em;
+  font-size: 0.82rem;
+}
+.btn--block {
+  width: 100%;
+}
+.btn.is-disabled,
+.btn[aria-disabled="true"] {
+  filter: grayscale(0.7);
+  opacity: 0.55;
+  pointer-events: none;
+  cursor: default;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* ----- pills, badges, status ----- */
+.pill {
+  display: inline-block;
+  padding: 0.2em 0.65em;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background-image: linear-gradient(to bottom, var(--chip-top), var(--chip-bottom));
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.22);
+  background-image: linear-gradient(
+    to bottom,
+    var(--accent, var(--teal)),
+    color-mix(in srgb, var(--accent, var(--teal)) 70%, #000)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), var(--shadow-sm);
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.status::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 999px;
+  background: var(--ink-faint);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink-faint) 22%, transparent);
+}
+.status--live {
+  color: var(--green-dark);
+}
+.status--live::before {
+  background: #36c46a;
+  box-shadow: 0 0 0 3px rgba(54, 196, 106, 0.22);
+}
+.status--beta::before,
+.status--in-development::before {
+  background: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.22);
+}
+.status--released::before {
+  background: var(--teal);
+  box-shadow: 0 0 0 3px rgba(31, 159, 176, 0.22);
+}
+
+/* ----- corner ribbon ----- */
+.ribbon-wrap {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  pointer-events: none;
+  border-top-right-radius: var(--radius);
+  /* sit above the card's glossy header, which is positioned and comes later in the DOM */
+  z-index: 3;
+}
+.ribbon {
+  position: absolute;
+  top: 15px;
+  right: -28px;
+  width: 135px;
+  text-align: center;
+  transform: rotate(45deg);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 0.3em 0;
+  background-image: linear-gradient(to bottom, var(--gold), var(--gold-dark));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* ----- prose (markdown bodies) ----- */
+.prose {
+  font-size: 1.02rem;
+}
+.prose h2 {
+  margin-top: 1.6em;
+  font-size: 1.35rem;
+}
+.prose h3 {
+  margin-top: 1.3em;
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 1rem;
+  padding-left: 1.3rem;
+}
+.prose li {
+  margin: 0.3em 0;
+}
+.prose strong {
+  color: var(--ink);
+}
+.prose code {
+  font-family: "Consolas", "SF Mono", ui-monospace, monospace;
+  font-size: 0.9em;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0.08em 0.4em;
+}
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.6rem 1rem;
+  border-left: 4px solid var(--teal-light);
+  background: var(--panel-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--ink-soft);
+}
+
+/* ----- misc ----- */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.6rem 1rem;
+  border-radius: 0 0 var(--radius-sm) 0;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 0;
+}
+hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2rem 0;
+}
+
+/* ----- floating dark-mode toggle (bottom-right, every page) ----- */
+.theme-toggle {
+  position: fixed;
+  right: clamp(0.9rem, 2.5vw, 1.4rem);
+  bottom: clamp(0.9rem, 2.5vw, 1.4rem);
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.32),
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(0, 0, 0, 0.08)
+    ),
+    linear-gradient(to bottom, var(--teal-light), var(--teal-dark));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow);
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+.theme-toggle:hover {
+  filter: brightness(1.07) saturate(1.03);
+  transform: translateY(-2px);
+}
+.theme-toggle:active {
+  transform: translateY(0);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+.theme-toggle:focus-visible {
+  outline: 3px solid rgba(31, 159, 176, 0.55);
+  outline-offset: 3px;
+}
+.theme-toggle__icon {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.25));
+}
+/* Show the icon for the action the click will perform: moon in light mode
+   (go dark), sun in dark mode (go light). */
+.theme-toggle__sun {
+  display: none;
+}
+.theme-toggle__moon {
+  display: block;
+}
+:root[data-theme="dark"] .theme-toggle__sun {
+  display: block;
+}
+:root[data-theme="dark"] .theme-toggle__moon {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  body {
+    font-size: 16px;
+  }
+  .section {
+    padding: 2rem 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
