@@ -3,6 +3,7 @@ title: Sage & Pestle
 tagline: A friendly Discord bot for an idle gardening and crafting game. Plant, tend, process, and breed.
 category: discord-bot
 status: in-development
+tags: [Idle Gardening, Crafting, Breeding, Cozy]
 tech: [TypeScript, discord.js, Components V2, Prisma, PostgreSQL]
 accent: "#3fae6b"
 featured: true

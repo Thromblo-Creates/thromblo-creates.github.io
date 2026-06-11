@@ -3,6 +3,7 @@ title: Idle MMO (Origin)
 tagline: The 2D idle-MMO hybrid for Android and PC that grew into AwayWard, the Discord bot.
 category: game
 status: in-development
+tags: [Idle MMO, Auto-Combat, Crafting, Prestige, Cross-Platform]
 tech: [Godot 4.x, GDScript, Godot Resources]
 accent: "#e0883a"
 badge: Origin

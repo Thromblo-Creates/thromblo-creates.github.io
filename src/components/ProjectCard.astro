@@ -21,7 +21,8 @@ const statusLabel: Record<string, string> = {
   beta: "Beta",
 };
 const cat = categoryMeta[data.category];
-const tech = data.tech.slice(0, 5);
+// Short application-descriptor tags; fall back to tech if a project has none yet.
+const tags = (data.tags.length ? data.tags : data.tech).slice(0, 5);
 const href = withBase(`/projects/${id}`);
 ---
 
@@ -57,7 +58,7 @@ const href = withBase(`/projects/${id}`);
     <h3 class="card__title"><a href={href}>{data.title}</a></h3>
     <p class="muted card__tagline">{data.tagline}</p>
     <div class="pill-row">
-      {tech.map((t) => <span class="pill">{t}</span>)}
+      {tags.map((t) => <span class="pill">{t}</span>)}
     </div>
   </div>
 

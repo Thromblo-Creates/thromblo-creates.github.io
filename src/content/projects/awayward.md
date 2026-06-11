@@ -3,8 +3,10 @@ title: AwayWard
 tagline: A full idle-RPG that lives inside Discord. Your hero adventures on, even while you are away.
 category: discord-bot
 status: live
+tags: [Idle RPG, Auto-Combat, Gacha & Pets, Crafting, Living World]
 tech: [Node.js, discord.js v14, Components V2, SQLite, PostgreSQL, Sharp]
 accent: "#7b5cff"
+cover: /images/projects/awayward/boss_omega_leviathan_prime.png
 badge: Flagship
 featured: true
 order: 1
